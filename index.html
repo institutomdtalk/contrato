@@ -190,8 +190,20 @@
           <input type="text" class="form-input" id="cCpf" placeholder="000.000.000-00" maxlength="14">
         </div>
         <div class="form-field--full">
-          <label class="form-label">Endereço completo (com CEP)</label>
-          <input type="text" class="form-input" id="cEndereco" placeholder="Rua, número, complemento, cidade/UF (CEP)">
+          <label class="form-label">Endereço (rua/avenida)</label>
+          <input type="text" class="form-input" id="cRua" placeholder="Ex.: Rua das Flores">
+        </div>
+        <div>
+          <label class="form-label">Número e complemento</label>
+          <input type="text" class="form-input" id="cNumero" placeholder="Ex.: 280, apto 706A">
+        </div>
+        <div>
+          <label class="form-label">Cidade / UF</label>
+          <input type="text" class="form-input" id="cCidade" placeholder="Ex.: São Paulo / SP">
+        </div>
+        <div>
+          <label class="form-label">CEP</label>
+          <input type="text" class="form-input" id="cCep" placeholder="00.000-000" maxlength="10">
         </div>
         <div class="form-field--full">
           <label class="form-label">E-mail</label>
@@ -423,6 +435,13 @@ document.addEventListener('DOMContentLoaded', function() {
     e.target.value = v;
   });
 
+  document.getElementById('cCep').addEventListener('input', function(e) {
+    var v = e.target.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.replace(/(\d{2})(\d{3})(\d{1,3})/, '$1.$2-$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,3})/, '$1.$2');
+    e.target.value = v;
+  });
+
   document.querySelectorAll('.form-input').forEach(function(el) { el.addEventListener('input', validateAll); });
   document.querySelectorAll('.form-pill input').forEach(function(el) { el.addEventListener('change', validateAll); });
 });
@@ -460,7 +479,10 @@ function validateAll() {
   var nome = document.getElementById('cNome').value.trim();
   var prof = document.getElementById('cProfissao').value.trim();
   var cpf = document.getElementById('cCpf').value.trim();
-  var end = document.getElementById('cEndereco').value.trim();
+  var rua = document.getElementById('cRua').value.trim();
+  var numero = document.getElementById('cNumero').value.trim();
+  var cidade = document.getElementById('cCidade').value.trim();
+  var cep = document.getElementById('cCep').value.trim();
   var email = document.getElementById('cEmail').value.trim();
   var fmt = document.querySelector('input[name="formato"]:checked');
   var cur = document.querySelector('input[name="curadoria"]:checked');
@@ -473,7 +495,7 @@ function validateAll() {
   var allChecked = document.querySelectorAll('.clause-checkbox.checked').length === 8;
   var btn = document.getElementById('submitBtn');
   var pdfBtn = document.getElementById('pdfBtn');
-  if (nome && prof && cpf.length >= 14 && end && email && modalOk && allChecked) {
+  if (nome && prof && cpf.length >= 14 && rua && numero && cidade && cep && email && modalOk && allChecked) {
     btn.disabled = false; btn.classList.add('active'); pdfBtn.disabled = false; pdfBtn.classList.add('active');
   } else {
     btn.disabled = true; btn.classList.remove('active'); pdfBtn.disabled = true; pdfBtn.classList.remove('active');
@@ -488,7 +510,7 @@ function getFormData() {
     nome: document.getElementById('cNome').value.trim(),
     prof: document.getElementById('cProfissao').value.trim(),
     cpf: document.getElementById('cCpf').value.trim(),
-    end: document.getElementById('cEndereco').value.trim(),
+    end: document.getElementById('cRua').value.trim() + ', ' + document.getElementById('cNumero').value.trim() + ', ' + document.getElementById('cCidade').value.trim() + ' (CEP: ' + document.getElementById('cCep').value.trim() + ')',
     email: document.getElementById('cEmail').value.trim(),
     valor: document.getElementById('valueAmount').textContent,
     today: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }),
@@ -500,28 +522,24 @@ function getFormData() {
 
 function downloadPDF() {
   var d = getFormData();
-  var css = '@page{size:A4;margin:0}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Raleway,sans-serif;color:#3A3632;font-size:10pt;line-height:1.7}.pg{width:210mm;min-height:297mm;padding:0;page-break-after:always;position:relative}.pg:last-child{page-break-after:auto}.hd{background:linear-gradient(135deg,#050D1A,#0B1D3A);padding:30px 40px 22px;text-align:center;position:relative}.hd::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent)}.hd .br{font-family:Raleway,sans-serif;font-size:7.5pt;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:#C4A45A;margin-bottom:8px}.hd h1{font-family:Cormorant Garamond,serif;font-size:18pt;font-weight:300;color:white}.hd .pn{font-size:7pt;color:rgba(255,255,255,0.35);margin-top:5px}.ct{padding:22px 40px}.st{font-family:Raleway,sans-serif;font-size:8.5pt;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0B1D3A;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(196,164,90,0.25)}.st:first-child{margin-top:0}.tb{width:100%;border-collapse:collapse;margin:8px 0 12px}.tb td{padding:4px 8px;font-family:Raleway,sans-serif;font-size:9.5pt;border:1px solid #e8e6e1}.tb td:first-child{width:130px;color:#9A9590;font-size:8.5pt;background:#FAF8F3}.cl p{margin-bottom:5px;text-align:justify;font-family:Raleway,sans-serif;font-size:9.5pt}.ch{font-family:Raleway,sans-serif;font-weight:700;color:#0B1D3A;font-size:9.5pt;margin:12px 0 4px}.vb{background:#0B1D3A;color:white;text-align:center;padding:14px;margin:10px 0}.vb .vl{font-family:Raleway,sans-serif;font-size:7pt;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C4A45A;margin-bottom:2px}.vb .va{font-family:Cormorant Garamond,serif;font-size:18pt;font-weight:300}.vb .vd{font-family:Raleway,sans-serif;font-size:8pt;color:rgba(255,255,255,0.4);margin-top:2px}.sg{margin-top:32px;padding-top:14px;border-top:1px solid #e8e6e1}.sb{margin-bottom:20px}.sl{width:180px;border-bottom:1px solid #0B1D3A;margin-bottom:3px;height:18px}.sn{font-family:Raleway,sans-serif;font-weight:700;color:#0B1D3A;font-size:9.5pt}.sr{font-family:Raleway,sans-serif;font-size:8pt;color:#9A9590}.sd{font-family:Raleway,sans-serif;font-size:9pt;color:#6B6560;margin-bottom:18px}.fb{position:absolute;bottom:0;left:0;right:0;background:#050D1A;padding:6px;text-align:center}.fb span{font-family:Raleway,sans-serif;font-size:6.5pt;letter-spacing:3px;text-transform:uppercase;color:#C4A45A}.np{background:#0B1D3A;color:white;text-align:center;padding:12px;font-size:12px;font-family:Raleway,sans-serif}.np strong{color:#C4A45A}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.np{display:none}}';
+  var css = '@page{size:A4;margin:18mm 24mm 18mm 24mm}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Raleway,sans-serif;color:#3A3632;font-size:9.5pt;line-height:1.65}.hd{background:linear-gradient(135deg,#050D1A,#0B1D3A);padding:24px 30px 18px;text-align:center;margin:-18mm -24mm 16px -24mm;position:relative}.hd::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#C4A45A,transparent)}.hd .br{font-family:Raleway,sans-serif;font-size:7pt;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:#C4A45A;margin-bottom:5px}.hd h1{font-family:Cormorant Garamond,serif;font-size:16pt;font-weight:300;color:white}.st{font-family:Raleway,sans-serif;font-size:8pt;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0B1D3A;margin:12px 0 5px;padding-bottom:3px;border-bottom:1px solid rgba(196,164,90,0.25)}.st:first-child{margin-top:0}.tb{width:100%;border-collapse:collapse;margin:5px 0 8px}.tb td{padding:3px 6px;font-family:Raleway,sans-serif;font-size:8.5pt;border:1px solid #e8e6e1}.tb td:first-child{width:110px;color:#9A9590;font-size:7.5pt;background:#FAF8F3}.cl p{margin-bottom:3px;text-align:justify;font-family:Raleway,sans-serif;font-size:8.5pt}.ch{font-family:Raleway,sans-serif;font-weight:700;color:#0B1D3A;font-size:8.5pt;margin:8px 0 3px}.vb{background:#0B1D3A;color:white;text-align:center;padding:10px;margin:6px 0}.vb .vl{font-family:Raleway,sans-serif;font-size:6.5pt;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#C4A45A;margin-bottom:1px}.vb .va{font-family:Cormorant Garamond,serif;font-size:15pt;font-weight:300}.vb .vd{font-family:Raleway,sans-serif;font-size:7pt;color:rgba(255,255,255,0.4);margin-top:1px}.sg{margin-top:24px;padding-top:10px;border-top:1px solid #e8e6e1}.sb{margin-bottom:16px}.sl{width:160px;border-bottom:1px solid #0B1D3A;margin-bottom:2px;height:14px}.sn{font-family:Raleway,sans-serif;font-weight:700;color:#0B1D3A;font-size:8.5pt}.sr{font-family:Raleway,sans-serif;font-size:7pt;color:#9A9590}.sd{font-family:Raleway,sans-serif;font-size:8pt;color:#6B6560;margin-bottom:14px}.pb{page-break-before:always}.np{background:#0B1D3A;color:white;text-align:center;padding:10px;font-size:11px;font-family:Raleway,sans-serif;margin:-18mm -24mm 14px -24mm}.np strong{color:#C4A45A}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.np{display:none}}';
 
-  var p1 = '<div class="pg"><div class="hd"><p class="br">Instituto MD Talk</p><h1>Contrato de Presta\u00e7\u00e3o de Servi\u00e7os</h1><p class="pn">P\u00e1gina 1/2</p></div><div class="ct">' +
+  var p1 = '<div class="hd"><p class="br">Instituto MD Talk</p><h1>Contrato de Presta\u00e7\u00e3o de Servi\u00e7os</h1></div>' +
     '<div class="st">1. Objeto do Contrato</div><div class="cl"><p>O presente contrato tem por objeto a presta\u00e7\u00e3o de servi\u00e7os educacionais, consistentes na realiza\u00e7\u00e3o de aulas particulares de ingl\u00eas, ministradas exclusivamente em formato online.</p></div>' +
     '<div class="st">2. Das Partes</div>' +
     '<table class="tb"><tr><td>Nome (Contratante):</td><td><strong>' + d.nome + '</strong></td></tr><tr><td>Profiss\u00e3o:</td><td>' + d.prof + '</td></tr><tr><td>CPF:</td><td>' + d.cpf + '</td></tr><tr><td>Endere\u00e7o:</td><td>' + d.end + '</td></tr><tr><td>E-mail:</td><td>' + d.email + '</td></tr></table>' +
     '<table class="tb"><tr><td>Nome (Contratada):</td><td><strong>Medical English ME (Instituto MD Talk)</strong></td></tr><tr><td>CNPJ:</td><td>51.786.115/0001-94</td></tr><tr><td>Endere\u00e7o:</td><td>Rua Nestor do Val, 280, Piraju/SP (CEP: 18.800-388)</td></tr><tr><td>E-mail:</td><td>mdtalk.office@gmail.com</td></tr><tr><td>Representante Legal:</td><td>Thaiana A. S. Martignoni Faria (383.152.268-51)</td></tr></table>' +
     '<div class="st">3. Do Curso</div>' +
     '<div class="vb"><p class="vl">Investimento Mensal</p><p class="va">' + d.valor + '</p><p class="vd">' + d.fmtLabel + ' \u00B7 ' + d.freqLabel + ' \u00B7 ' + d.curLabel + '</p></div>' +
-    '<div class="cl"><p>As aulas ter\u00e3o dura\u00e7\u00e3o de 50 (cinquenta) minutos cada. As aulas ter\u00e3o in\u00edcio em data a ser definida de comum acordo entre as partes, em hor\u00e1rio igualmente acordado.</p><p>O in\u00edcio de cada aula ficar\u00e1 condicionado \u00e0 confirma\u00e7\u00e3o pr\u00e9via do(a) CONTRATANTE, a ser efetuada via WhatsApp, com anteced\u00eancia m\u00ednima de 10 (dez) minutos em rela\u00e7\u00e3o ao hor\u00e1rio combinado.</p></div>' +
-    '<p class="ch">3.1 Da Pol\u00edtica de Remanejamento</p><div class="cl"><p>O(A) CONTRATANTE poder\u00e1 solicitar o remanejamento da aula em casos de for\u00e7a maior, desde que o pedido seja realizado com anteced\u00eancia m\u00ednima de 2 (duas) horas em rela\u00e7\u00e3o ao hor\u00e1rio originalmente agendado.</p><p>O remanejamento fica condicionado \u00e0 disponibilidade na agenda da CONTRATADA.</p><p>A falta de comunica\u00e7\u00e3o dentro do prazo para remanejamento far\u00e1 com que a aula seja realizada atrav\u00e9s do envio do material correspondente e, quando necess\u00e1rio, \u00e1udio explicativo.</p><p>A aus\u00eancia do(a) CONTRATANTE nas aulas n\u00e3o o isenta do pagamento da mensalidade.</p></div>' +
-    '<p class="ch">3.2 Das F\u00e9rias</p><div class="cl"><p>O(A) CONTRATANTE poder\u00e1 tirar f\u00e9rias de at\u00e9 30 (trinta) dias por ano, desde que informe \u00e0 CONTRATADA com anteced\u00eancia. Durante o per\u00edodo de f\u00e9rias, o(a) CONTRATANTE dever\u00e1 manter o pagamento da mensalidade correspondente ao m\u00eas de aus\u00eancia, ficando, em contrapartida, isento(a) do pagamento da mensalidade do m\u00eas seguinte.</p><p>Todas as aulas n\u00e3o realizadas durante o per\u00edodo de f\u00e9rias ser\u00e3o integralmente repostas ao longo do m\u00eas de isen\u00e7\u00e3o.</p></div>' +
-    '<p class="ch">3.3 Do Recesso de Fim de Ano</p><div class="cl"><p>O recesso fica definido como o intervalo compreendido entre os dias 21 de dezembro e 04 de janeiro, per\u00edodo em que n\u00e3o haver\u00e1 aula.</p></div>' +
-    '</div><div class="fb"><span>Instituto MD Talk \u00B7 Medical English</span></div></div>';
+    '<div class="cl"><p>As aulas ter\u00e3o dura\u00e7\u00e3o de 50 minutos cada, com in\u00edcio em data a ser definida de comum acordo entre as partes.</p><p>A confirma\u00e7\u00e3o pr\u00e9via deve ser feita via WhatsApp com anteced\u00eancia m\u00ednima de 10 minutos.</p></div>' +
+    '<p class="ch">3.1 Da Pol\u00edtica de Remanejamento</p><div class="cl"><p>Remanejamento poss\u00edvel com anteced\u00eancia m\u00ednima de 2 horas, condicionado \u00e0 disponibilidade da CONTRATADA. Sem comunica\u00e7\u00e3o no prazo, a aula ser\u00e1 realizada via envio de material. A aus\u00eancia n\u00e3o isenta o pagamento.</p></div>' +
+    '<p class="ch">3.2 Das F\u00e9rias</p><div class="cl"><p>At\u00e9 30 dias/ano de f\u00e9rias, mantendo a mensalidade do m\u00eas de aus\u00eancia e ficando isento(a) no m\u00eas seguinte. Aulas repostas integralmente.</p></div>' +
+    '<p class="ch">3.3 Do Recesso</p><div class="cl"><p>Recesso de 21/12 a 04/01, sem aulas.</p></div>' +
+    '<div class="st">4. Do Pagamento</div><div class="cl"><p>Valor: <strong>' + d.valor + '</strong>. Primeira mensalidade no envio do contrato. Demais a cada 30 dias ap\u00f3s a primeira aula, via PIX (CPF: 383.152.268-51).</p><p>Valor da contrata\u00e7\u00e3o irrestitu\u00edvel (garantia de vaga). Mensalidade fixa e vital\u00edcia. N\u00e3o frequ\u00eancia n\u00e3o exime do pagamento.</p><p>Desist\u00eancia comunicada por escrito com 21 dias de anteced\u00eancia. Descumprimento implica multa de 1 mensalidade. Ap\u00f3s multa, direito de concluir o m\u00eas correspondente.</p></div>' +
+    '<div class="st">5. Disposi\u00e7\u00f5es Finais</div><div class="cl"><p>Foro: Piraju/SP.</p></div>' +
+    '<div class="sg"><p class="sd">Piraju/SP, ' + d.today + '</p><div class="sb"><div class="sl"></div><p class="sn">Thaiana Andressa S. Martignoni Faria</p><p class="sr">Instituto MD Talk \u2014 Contratada</p></div><div class="sb"><div class="sl"></div><p class="sn">' + d.nome + '</p><p class="sr">Contratante</p></div></div>';
 
-  var p2 = '<div class="pg"><div class="hd"><p class="br">Instituto MD Talk</p><h1>Contrato de Presta\u00e7\u00e3o de Servi\u00e7os</h1><p class="pn">P\u00e1gina 2/2</p></div><div class="ct">' +
-    '<div class="st">4. Do Pagamento</div><div class="cl"><p>Entre as partes, estabelece-se o valor de <strong>' + d.valor + '</strong> como contrapresta\u00e7\u00e3o pelos servi\u00e7os educacionais contratados.</p><p>A primeira mensalidade dever\u00e1 ser paga no momento do envio do contrato. As mensalidades seguintes ser\u00e3o devidas a cada 30 (trinta) dias, contados a partir da data da primeira aula. O pagamento ser\u00e1 efetuado mensalmente via PIX (CPF: 383.152.268-51).</p><p>O valor pago no momento da contrata\u00e7\u00e3o n\u00e3o ser\u00e1 reembolsado em nenhuma hip\u00f3tese, seja em caso de desist\u00eancia antes ou ap\u00f3s o in\u00edcio das aulas. Esse valor corresponde \u00e0 garantia da vaga e aos custos administrativos necess\u00e1rios para o in\u00edcio do curso, sendo, portanto, irrestitu\u00edvel.</p><p>O valor da mensalidade n\u00e3o ser\u00e1 reajustado, permanecendo fixo e vital\u00edcio.</p><p>A n\u00e3o frequ\u00eancia do(a) CONTRATANTE nas aulas n\u00e3o o exime do pagamento da mensalidade.</p><p>A desist\u00eancia do curso dever\u00e1 ser comunicada pelo(a) CONTRATANTE \u00e0 CONTRATADA, por escrito (e-mail, mensagem ou outro meio formalmente aceito), com anteced\u00eancia m\u00ednima de 21 (vinte e um) dias em rela\u00e7\u00e3o ao vencimento da mensalidade subsequente.</p><p>O descumprimento desse prazo implicar\u00e1 na aplica\u00e7\u00e3o de multa correspondente ao valor de uma mensalidade, al\u00e9m das mensalidades j\u00e1 vencidas.</p><p>Ap\u00f3s o pagamento da multa, o(a) CONTRATANTE ter\u00e1 direito a concluir o m\u00eas de aulas correspondente \u00e0 mensalidade paga, garantindo o cumprimento das aulas previstas para o per\u00edodo, caso assim desejar.</p></div>' +
-    '<div class="st">5. Disposi\u00e7\u00f5es Finais</div><div class="cl"><p>As partes elegem o foro de Piraju/SP, atual domic\u00edlio da CONTRATADA, para dirimir quaisquer d\u00favidas e pend\u00eancias decorrentes deste contrato, inclusive eventual execu\u00e7\u00e3o nos termos da lei.</p></div>' +
-    '<div class="sg"><p class="sd">Piraju/SP, ' + d.today + '</p><div class="sb"><div class="sl"></div><p class="sn">Thaiana Andressa S. Martignoni Faria</p><p class="sr">Instituto MD Talk \u2014 Contratada | Professora de Ingl\u00eas M\u00e9dico</p></div><div class="sb"><div class="sl"></div><p class="sn">' + d.nome + '</p><p class="sr">Contratante</p></div></div>' +
-    '</div><div class="fb"><span>Instituto MD Talk \u00B7 Medical English</span></div></div>';
-
-  var full = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Contrato MD Talk - ' + d.nome + '</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>' + css + '</style></head><body><div class="np">Use <strong>Ctrl+P</strong> (ou <strong>Cmd+P</strong> no Mac) e selecione <strong>\u201CSalvar como PDF\u201D</strong></div>' + p1 + p2 + '<scr' + 'ipt>window.onload=function(){window.print();}</scr' + 'ipt></body></html>';
+  var full = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Contrato MD Talk - ' + d.nome + '</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>' + css + '</style></head><body><div class="np">Use <strong>Ctrl+P</strong> (ou <strong>Cmd+P</strong>) \u2192 <strong>Salvar como PDF</strong></div>' + p1 + '<scr' + 'ipt>window.onload=function(){window.print();}</scr' + 'ipt></body></html>';
 
   var w = window.open('', '_blank');
   if (w) { w.document.write(full); w.document.close(); }
