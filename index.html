@@ -191,15 +191,7 @@
         </div>
         <div class="form-field--full">
           <label class="form-label">Endereço completo (com CEP)</label>
-          <input type="text" class="form-input" id="cEndereco" placeholder="Rua, número e complemento">
-        </div>
- <div class="form-field--full">
-          <label class="form-label">Cidade/ UF</label>
-          <input type="text" class="form-input" id="cCidade/ UF" placeholder="Cidade/ UF">
-        </div>
- <div class="form-field--full">
-          <label class="form-label">CEP</label>
-          <input type="text" class="form-input" id="cCEP" placeholder="CEP">
+          <input type="text" class="form-input" id="cEndereco" placeholder="Rua, número, complemento, cidade/UF (CEP)">
         </div>
         <div class="form-field--full">
           <label class="form-label">E-mail</label>
@@ -469,8 +461,6 @@ function validateAll() {
   var prof = document.getElementById('cProfissao').value.trim();
   var cpf = document.getElementById('cCpf').value.trim();
   var end = document.getElementById('cEndereco').value.trim();
-  var end = document.getElementById('cCidade').value.trim();
-  var end = document.getElementById('cCEP').value.trim();
   var email = document.getElementById('cEmail').value.trim();
   var fmt = document.querySelector('input[name="formato"]:checked');
   var cur = document.querySelector('input[name="curadoria"]:checked');
@@ -499,8 +489,6 @@ function getFormData() {
     prof: document.getElementById('cProfissao').value.trim(),
     cpf: document.getElementById('cCpf').value.trim(),
     end: document.getElementById('cEndereco').value.trim(),
-    cid: = document.getElementById('cCidade').value.trim();
-    cep: = document.getElementById('cCEP').value.trim();
     email: document.getElementById('cEmail').value.trim(),
     valor: document.getElementById('valueAmount').textContent,
     today: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }),
